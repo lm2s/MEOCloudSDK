@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:MEOCloudSDK"
+      name = "MEOCloudSDK">
+      <Group
+         location = "group:Model"
+         name = "Model">
+         <FileRef
+            location = "group:MCAccount.h">
+         </FileRef>
+         <FileRef
+            location = "group:MCAccount.m">
+         </FileRef>
+         <FileRef
+            location = "group:MCLink.h">
+         </FileRef>
+         <FileRef
+            location = "group:MCLink.m">
+         </FileRef>
+         <FileRef
+            location = "group:MCMetadata.h">
+         </FileRef>
+         <FileRef
+            location = "group:MCMetadata.m">
+         </FileRef>
+         <FileRef
+            location = "group:MCShare.h">
+         </FileRef>
+         <FileRef
+            location = "group:MCShare.m">
+         </FileRef>
+         <FileRef
+            location = "group:MCUser.h">
+         </FileRef>
+         <FileRef
+            location = "group:MCUser.m">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:MEOCloud.h">
+      </FileRef>
+      <FileRef
+         location = "group:MCClient.h">
+      </FileRef>
+      <FileRef
+         location = "group:MCClient.m">
+      </FileRef>
+      <FileRef
+         location = "group:MCSession.h">
+      </FileRef>
+      <FileRef
+         location = "group:MCSession.m">
+      </FileRef>
+      <FileRef
+         location = "group:MEOCloudErrors.h">
+      </FileRef>
+      <FileRef
+         location = "group:NSDate+Utils.h">
+      </FileRef>
+      <FileRef
+         location = "group:NSDate+Utils.m">
+      </FileRef>
+      <FileRef
+         location = "group:NSString+Utils.h">
+      </FileRef>
+      <FileRef
+         location = "group:NSString+Utils.m">
+      </FileRef>
+      <FileRef
+         location = "group:URLConnection.h">
+      </FileRef>
+      <FileRef
+         location = "group:URLConnection.m">
+      </FileRef>
+   </Group>
+</Workspace>

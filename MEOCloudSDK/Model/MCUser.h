@@ -1,4 +1,4 @@
-// NSDate+Utils.h
+// MCUser.h
 //
 // Copyright (c) 2015 Luís M. Marques Silva
 //
@@ -22,6 +22,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSDate(Utils)
-+ (NSDate*)dateFromString:(NSString*)dateString pattern:(NSString*)pattern;
+@interface MCUser : NSObject
+@property (nonatomic, strong) NSString* identifier;
+@property (nonatomic, strong) NSString* name;
+@property (nonatomic, strong) NSString* email;
+@property (nonatomic, assign) BOOL isOwner;
+@property (nonatomic, assign) BOOL isUser;
+- (instancetype)initWithDictionary:(NSDictionary*)dictionary;
 @end

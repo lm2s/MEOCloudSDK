@@ -1,4 +1,4 @@
-// NSDate+Utils.h
+// MCShare.h
 //
 // Copyright (c) 2015 Luís M. Marques Silva
 //
@@ -22,6 +22,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSDate(Utils)
-+ (NSDate*)dateFromString:(NSString*)dateString pattern:(NSString*)pattern;
+@interface MCShare : NSObject
+@property (nonatomic, strong) NSString* identifier;
+@property (nonatomic, assign) BOOL isOwner;
+@property (nonatomic, strong) NSArray* users;
+@property (nonatomic, strong) NSString* path;
+@property (nonatomic, strong) NSString* type;
+
+- (instancetype)initWithIdentifier:(NSString*)identifier dictionary:(NSDictionary*)dictionary NS_DESIGNATED_INITIALIZER;
 @end

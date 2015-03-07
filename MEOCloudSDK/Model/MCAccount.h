@@ -1,4 +1,4 @@
-// NSDate+Utils.h
+// MCAccount.h
 //
 // Copyright (c) 2015 Luís M. Marques Silva
 //
@@ -22,6 +22,18 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSDate(Utils)
-+ (NSDate*)dateFromString:(NSString*)dateString pattern:(NSString*)pattern;
+@interface MCAccount : NSObject
+
+@property (nonatomic, strong) NSString* name;
+@property (nonatomic, strong) NSString* identifier;
+@property (nonatomic, strong) NSDate* lastEvent;
+@property (nonatomic, assign) unsigned long long quotaShared;
+@property (nonatomic, assign) unsigned long long quota;
+@property (nonatomic, assign) unsigned long long quotaNormal;
+@property (nonatomic, assign) BOOL isActive;
+@property (nonatomic, strong) NSString* email;
+@property (nonatomic, strong) NSString* language;
+
+- (instancetype)initWithDictionary:(NSDictionary*)dictionary NS_DESIGNATED_INITIALIZER;
+
 @end

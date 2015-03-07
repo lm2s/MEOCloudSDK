@@ -1,10 +1,24 @@
+// MCClient.h
 //
-//  MEOCRestClient.h
-//  MEOCloudApp
+// Copyright (c) 2015 Luís M. Marques Silva
 //
-//  Created by Luís Silva on 24/01/15.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #import <Foundation/Foundation.h>
 #import "MCSession.h"
@@ -34,20 +48,25 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
     MCThumbnailFormatPNG
 };
 
+// - TO REMOVE
 @protocol MCClientDelegate <NSObject>
 
-- (void)folderCreatedAtPath:(NSString*)path;
-- (void)failedToCreateFolderAtPath:(NSString*)path;
-
-- (void)fileUploaded;
-
-//- (void)uploadProgress:(void (^)(CGFloat progress))progress complete:(void(^)(void))complete;
-
 @end
+// -
 
-@interface MCClient : NSObject {
 
-}
+/**
+ * This class exposes the MEOCloud API functionality. 
+ *
+ * It allows the retrieval of metadata,
+ * file and folder manipulation, file download and upload, generation of sharing links for files
+ * and folders, invitation of other users to collaborate in a folder, manipulation of shared folders
+ * options, etc.
+ *
+ * For use of this class, first create a session and then use the initWithSession method to
+ * create an instance of this class.
+ */
+@interface MCClient : NSObject
 
 @property (nonatomic, weak) id<MCClientDelegate> delegate;
 

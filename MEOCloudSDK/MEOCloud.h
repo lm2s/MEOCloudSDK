@@ -1,4 +1,4 @@
-// NSDate+Utils.h
+// MEOCloud.h
 //
 // Copyright (c) 2015 Luís M. Marques Silva
 //
@@ -20,8 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#import <Foundation/Foundation.h>
 
-@interface NSDate(Utils)
-+ (NSDate*)dateFromString:(NSString*)dateString pattern:(NSString*)pattern;
-@end
+#ifndef _MEOCLOUD_
+#define _MEOCLOUD_
+
+#import "MCClient.h"
+#import "MCSession.h"
+
+#import "MCAccount.h"
+#import "MCLink.h"
+#import "MCMetadata.h"
+#import "MCShare.h"
+#import "MCUser.h"
+
+#import "MEOCloudErrors.h"
+
+#endif
