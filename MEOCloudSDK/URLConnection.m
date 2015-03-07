@@ -1,20 +1,39 @@
-// SQiShER
-// https://gist.github.com/SQiShER/5009086
+// URLConnection.h
+//
+// Copyright (c) 2015 Luís M. Marques Silva
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 #import "URLConnection.h"
 
 typedef void (^ProgressBlock)( long long bytesReceived,  long long totalBytes);
 
 @interface URLConnection ()
-@property(nonatomic, strong) NSURLConnection *connection;
-@property(nonatomic, strong) NSURLResponse *response;
-@property(nonatomic, strong) NSData *responseData;
-@property(nonatomic, strong) NSCondition *condition;
-@property(nonatomic, strong) NSError *error;
-@property(nonatomic) BOOL connectionDidFinishLoading;
-@property(nonatomic, strong) ProgressBlock progressBlock;
-@property(nonatomic, readwrite) long long total;
-@property(nonatomic, readwrite) long long received;
+@property(NS_NONATOMIC_IOSONLY, strong) NSURLConnection *connection;
+@property(NS_NONATOMIC_IOSONLY, strong) NSURLResponse *response;
+@property(NS_NONATOMIC_IOSONLY, strong) NSData *responseData;
+@property(NS_NONATOMIC_IOSONLY, strong) NSCondition *condition;
+@property(NS_NONATOMIC_IOSONLY, strong) NSError *error;
+@property(NS_NONATOMIC_IOSONLY) BOOL connectionDidFinishLoading;
+@property(NS_NONATOMIC_IOSONLY, strong) ProgressBlock progressBlock;
+@property(NS_NONATOMIC_IOSONLY, readwrite) long long total;
+@property(NS_NONATOMIC_IOSONLY, readwrite) long long received;
 @end
 
 @implementation URLConnection
@@ -29,7 +48,7 @@ typedef void (^ProgressBlock)( long long bytesReceived,  long long totalBytes);
     return [conn sendSynchronousRequest:request returningResponse:response error:error];
 }
 
-- (id)init {
+- (instancetype)init {
     self = [super init];
     if (self) {
         self.condition = [[NSCondition alloc] init];

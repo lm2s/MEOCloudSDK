@@ -48,15 +48,9 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
     MCThumbnailFormatPNG
 };
 
-// - TO REMOVE
-@protocol MCClientDelegate <NSObject>
-
-@end
-// -
-
 
 /**
- * This class exposes the MEOCloud API functionality. 
+ * `MCClient` exposes the MEOCloud API functionality.
  *
  * It allows the retrieval of metadata,
  * file and folder manipulation, file download and upload, generation of sharing links for files
@@ -68,11 +62,38 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
  */
 @interface MCClient : NSObject
 
-@property (nonatomic, weak) id<MCClientDelegate> delegate;
+/**
+ *  Initializes an `MCClient` object with the specified session.
+ *
+ *  @param session The session for the client.
+ *
+ *  @return The newly initialized `MCClient`.
+ */
+- (instancetype)initWithSession:(MCSession*)session NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithSession:(MCSession*)session;
+/**
+ *  Retrieves the user account information.
+ *
+ *  @param accountInfo  A block to be executed when the operation is successful. This block has no 
+ *                      return values and takes one argument: the `MCAccount` object that contains 
+ *                      all of the user account information.
+ *  @param failure      A block to be executed when the operation fails. This block has no return
+ *                      values and takes one argument: the `NSError` object describing the error
+ *                      that occurred.
+ */
 - (void)userAccountInfo:(void (^)(MCAccount* accountInfo))accountInfo failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Retrieves the metadata at a certain path.
+ *
+ *  @param path     The path string from which the metadata is to be retrieved.
+ *  @param success  A block to be executed when the operation is successful. This block has no 
+ *                  return value and takes one argument: a `NSArray` containing all the metadata
+ *                  retrieve.
+ *  @param failure  A block to be executed when the operation fails. This block has no return
+ *                  values and takes one argument: the `NSError` object describing the error
+ *                  that occurred.
+ */
 - (void)metadataAtPath:(NSString*)path
                success:(void (^)(NSArray *metadata))success
                failure:(void (^)(NSError *error))failure;
@@ -83,15 +104,59 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
                success:(void (^)(NSArray *metadata))success
                failure:(void (^)(NSError *error))failure;
 
+/**
+ *  Downloads a file from the MEOCloud, saving to a local temporary directory.
+ *
+ *  @param path     The path string pointing to the file in the MEOCloud.
+ *  @param progress A block to be executed while the file is being downloaded. This block has no
+ *                  return value and takes two arguments: `bytesRead` the total number of bytes 
+ *                  downloaded, `bytesExpectedToRead` the file size in bytes.
+ *  @param success  A block to be executed if the download is successful. This block has no return 
+ *                  value and takes one argument: the local path to the downloaded file.
+ *  @param failure  A block to be executed if the download fails. This blocks has no return value
+ *                  and takes one argument: the error describing what caused the operation to fail.
+ */
 - (void)downloadFileAtPath:(NSString*)path
                   progress:(void (^)(long long bytesRead, long long bytesExpectedToRead))progress
                    success:(void (^)(NSString* path))success
                    failure:(void (^)(NSError* error))failure;
+
+/**
+ *  Resumes a file download.
+ *
+ *  @param path The path string pointing to the file (this path must be equal to the path string
+ *              used in `downloadFileAtPath:progress:success:failure`).
+ */
 - (void)resumeFileDownloadAtPath:(NSString *)path;
+
+/**
+ *  Pauses a file currently being downloaded.
+ *
+ *  @param path The path string pointing to the file (this path must be equal to the path string
+ *              used in `downloadFileAtPath:progress:success:failure`).
+ */
 - (void)pauseFileDownloadAtPath:(NSString*)path;
+
+/**
+ *  Cancels the download of a file.
+ *
+ *  @param path The path string pointing to the file (this path must be equal to the path string
+ *              used in `downloadFileAtPath:progress:success:failure`).
+ */
 - (void)cancelFileDownloadAtPath:(NSString*)path;
 
+/**
+ *  Helper method to verify if a file was already downloaded and is cached.
+ *
+ *  @param path The path string pointing to the file in the MEOCloud.
+ *
+ *  @return `YES` if the file is cached, otherwise `NO`.
+ */
 - (BOOL)isFileCached:(NSString*)path;
+
+/**
+ *  Helper method to remove all files in cache.
+ */
 - (void)clearCachedFiles;
 
 // TODO
@@ -102,6 +167,18 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
                  success:(void (^)(UIImage* thumbnailImage))success
                  failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Creates a folder in MEOCloud.
+ *
+ *  @param folder   The folder string describing its name.
+ *  @param path     The path string pointing to where the folder is to be created.
+ *  @param success  A block to be executed when the operation is successful. This block has no
+ *                  return value and takes one argument: a dictionary containing the created folder
+ *                  metadata.
+ *  @param failure  A block to be executed when the operation fails. This block has no return
+ *                  values and takes one argument: the `NSError` object describing the error
+ *                  that occurred.
+ */
 - (void)createFolder:(NSString*)folder
               atPath:(NSString*)path
              success:(void (^)(NSDictionary* info))success
@@ -114,12 +191,29 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
              success:(void (^)(NSDictionary *metadata))success
              failure:(void (^)(NSError *error))failure;
 
+/**
+ *  Creates a file in the MEOCloud and uploads a stream of data into it.
+ *
+ *  @param path         The path string pointing to where the file is to be created.
+ *  @param filename     The filename.
+ *  @param overwrite    `YES` if an existing file with the same name is to be overwritten,
+ *                      otherwise `NO`.
+ *  @param identifier   The upload identifier string. Each upload is given an unique identifier
+ *                      string, which is used to track that specific upload while it occurs.
+ *  @param inputStream  A block to be executed while the operation is being executed, which feeds 
+ *                      data to the upload operation. This block is expected to return `YES` while
+ *                      there is data being fed, otherwise `NO`. This block takes four arguments:
+ *                      `uploadIdentifier`
+ *  @param progress
+ *  @param success
+ *  @param failure
+ */
 - (void)uploadToPath:(NSString*)path
             filename:(NSString*)filename
            overwrite:(BOOL)overwrite
           identifier:(NSString*)identifier
-         inputStream:(BOOL (^)(NSString* uploadId, long long offset, NSData **data, BOOL* abortUpload))inputStream
-            progress:(void (^)(NSString* uploadId, unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
+         inputStream:(BOOL (^)(NSString* uploadIdentifier, long long offset, NSData **data, BOOL* abortUpload))inputStream
+            progress:(void (^)(NSString* uploadIdentifier, unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
              success:(void (^)(NSDictionary *metadata))success
              failure:(void (^)(NSError *error))failure;
 

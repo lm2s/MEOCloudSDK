@@ -42,11 +42,11 @@
 //}
 
 @interface MCLink : NSObject
-@property (nonatomic, strong) NSString* url;
-@property (nonatomic, strong) NSString* path;
-@property (nonatomic, strong) NSString* relativePath;
-@property (nonatomic, strong) NSString* shareIdentifier;
-@property (nonatomic, strong) NSDate* expirationDate;
-@property (nonatomic, strong) MCMetadata* metadata;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* url;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* path;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* relativePath;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* shareIdentifier;
+@property (NS_NONATOMIC_IOSONLY, strong) NSDate* expirationDate;
+@property (NS_NONATOMIC_IOSONLY, strong) MCMetadata* metadata;
 - (instancetype)initWithDictionary:(NSDictionary*)dictionary NS_DESIGNATED_INITIALIZER;
 @end

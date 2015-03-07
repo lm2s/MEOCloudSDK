@@ -27,8 +27,8 @@
 
 @interface URLConnection : NSObject <NSURLConnectionDataDelegate, NSURLConnectionDelegate>
 
-@property (nonatomic, strong) NSNumber* totalBytes;
-@property (nonatomic, strong) NSNumber* receivedBytes;
+@property (NS_NONATOMIC_IOSONLY, strong) NSNumber* totalBytes;
+@property (NS_NONATOMIC_IOSONLY, strong) NSNumber* receivedBytes;
 
 + (NSData *)sendSynchronousRequest:(NSURLRequest *)request
                           progress:(void (^)( long long bytesReceived,  long long totalBytes))progress

@@ -32,8 +32,8 @@
  */
 @interface MCSession : NSObject
 
-@property (nonatomic, readonly) BDBOAuth1SessionManager *networkManager;
-@property (nonatomic, readonly) BOOL isLinked;
+@property (NS_NONATOMIC_IOSONLY, readonly) BDBOAuth1SessionManager *networkManager;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL isLinked;
 
 
 + (MCSession*)sharedSession;

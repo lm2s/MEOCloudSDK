@@ -24,15 +24,15 @@
 
 @interface MCAccount : NSObject
 
-@property (nonatomic, strong) NSString* name;
-@property (nonatomic, strong) NSString* identifier;
-@property (nonatomic, strong) NSDate* lastEvent;
-@property (nonatomic, assign) unsigned long long quotaShared;
-@property (nonatomic, assign) unsigned long long quota;
-@property (nonatomic, assign) unsigned long long quotaNormal;
-@property (nonatomic, assign) BOOL isActive;
-@property (nonatomic, strong) NSString* email;
-@property (nonatomic, strong) NSString* language;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* name;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* identifier;
+@property (NS_NONATOMIC_IOSONLY, strong) NSDate* lastEvent;
+@property (NS_NONATOMIC_IOSONLY, assign) unsigned long long quotaShared;
+@property (NS_NONATOMIC_IOSONLY, assign) unsigned long long quota;
+@property (NS_NONATOMIC_IOSONLY, assign) unsigned long long quotaNormal;
+@property (NS_NONATOMIC_IOSONLY, assign) BOOL isActive;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* email;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* language;
 
 - (instancetype)initWithDictionary:(NSDictionary*)dictionary NS_DESIGNATED_INITIALIZER;
 

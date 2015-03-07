@@ -23,19 +23,19 @@
 #import <Foundation/Foundation.h>
 
 @interface MCMetadata : NSObject<NSCoding>
-@property (nonatomic, strong) NSNumber* bytes;
-@property (nonatomic, strong) NSString* uniqueIdentifier;
-@property (nonatomic, assign) BOOL isDirectory;
-@property (nonatomic, assign) BOOL isOwner;
-@property (nonatomic, strong) NSDate* modified;
-@property (nonatomic, strong) NSString* path;
-@property (nonatomic, strong) NSString* filename;
-@property (nonatomic, strong) NSString* revision;
-@property (nonatomic, strong) NSString* root;
-@property (nonatomic, strong) NSString* size;
-@property (nonatomic, strong) NSString* mimeType;
-@property (nonatomic, strong) NSString* icon;
-@property (nonatomic, assign) BOOL hasThumbnail;
+@property (NS_NONATOMIC_IOSONLY, strong) NSNumber* bytes;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* uniqueIdentifier;
+@property (NS_NONATOMIC_IOSONLY, assign) BOOL isDirectory;
+@property (NS_NONATOMIC_IOSONLY, assign) BOOL isOwner;
+@property (NS_NONATOMIC_IOSONLY, strong) NSDate* modified;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* path;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* filename;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* revision;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* root;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* size;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* mimeType;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* icon;
+@property (NS_NONATOMIC_IOSONLY, assign) BOOL hasThumbnail;
 
 - (instancetype)initWithDictionary:(NSDictionary*)dictionary NS_DESIGNATED_INITIALIZER;
 @end
