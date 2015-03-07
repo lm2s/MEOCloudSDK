@@ -203,10 +203,18 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
  *  @param inputStream  A block to be executed while the operation is being executed, which feeds 
  *                      data to the upload operation. This block is expected to return `YES` while
  *                      there is data being fed, otherwise `NO`. This block takes four arguments:
- *                      `uploadIdentifier`
- *  @param progress
- *  @param success
- *  @param failure
+ *                      the upload identifier string, the offset from which data is to be fed, 
+ *                      the data to be uploaded, `YES` if the upload is to be aborted, 
+ *                      otherwise `NO`.
+ *  @param progress     A block to be executed while the operation is being executed. This block 
+ *                      has no return value and takes three arguments: the upload identifier string,
+ *                      the number of bytes uploaded and the total number of bytes to be uploaded.
+ *  @param success      A block to be executed when the operation is successful. This block has no
+ *                      return value and takes one argument: a dictionary the newly uploaded file
+ *                      metadata.
+ *  @param failure      A block to be executed when the operation fails. This block has no return
+ *                      values and takes one argument: the `NSError` object describing the error
+ *                      that occurred.
  */
 - (void)uploadToPath:(NSString*)path
             filename:(NSString*)filename
@@ -217,6 +225,17 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
              success:(void (^)(NSDictionary *metadata))success
              failure:(void (^)(NSError *error))failure;
 
+/**
+ *  Deletes a file or folder from the MEOCloud.
+ *
+ *  @param path     The path string pointing to the file or folder in the MEOCloud.
+ *  @param success  A block to be executed if the operation is successful. This block has no
+ *                  return value and takes one argument: a dictionary containing deleted file or 
+ *                  folder metadata.
+ *  @param failure  A block to be executed if the operation fails. This block has no return
+ *                  values and takes one argument: the `NSError` object describing the error
+ *                  that occurred.
+ */
 - (void)deleteAtPath:(NSString*)path
              success:(void (^)(NSDictionary* metadata))success
              failure:(void (^)(NSError* error))failure;
