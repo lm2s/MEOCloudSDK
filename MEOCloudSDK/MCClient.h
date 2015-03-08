@@ -27,11 +27,29 @@
 
 extern NSString* const MCClientErrorDomain;
 
-typedef NS_ENUM(NSInteger, MCClientError) {
+/**
+ *  `MCClient` error codes.
+ */
+typedef NS_ENUM(NSInteger, MCClientError){
+    /**
+     *  When a URL is invalid.
+     */
     kInvalidURLError = -1,
+    /**
+     *  If an invalid short URL is given.
+     */
     kRetrieveSubdomainError = -2,
+    /**
+     *  If a folder collaboration share fails.
+     */
     kShareFolderFailed = -3,
+    /**
+     *  If a folder collaboration invitation partially fails.
+     */
     kShareFolderPartialSuccess = -4,
+    /**
+     *  When an upload abort is requested.
+     */
     kUploadAbortRequested = -5
 };
 
@@ -240,39 +258,137 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
              success:(void (^)(NSDictionary* metadata))success
              failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Retrive a list of the shared folders.
+ *
+ *  @param sharedFolders    A block that is executed after the successful retrieval of the shared
+ *                          folders information. An `NSArray` containing `MCShare` objects is 
+ *                          passed in.
+ *  @param failure          A block to be executed when the operation fails. This block has no 
+ *                          return values and takes one argument: the `NSError` object describing 
+ *                          the error that occurred.
+ */
 - (void)sharedFolders:(void (^)(NSArray* folders))sharedFolders
               failure:(void (^)(NSError*))failure;
 
+/**
+ *  Retrive a list of the shared by link files or folders.
+ *
+ *  @param sharedFolders    A block that is executed after the successful retrieval of the shared by
+ *                          link file or folders information. An `NSArray` containing `MCLink` 
+ *                          objects is passed in.
+ *  @param failure          A block to be executed when the operation fails. This block has no return
+ *                          values and takes one argument: the `NSError` object describing the error
+ *                          that occurred.
+ */
 - (void)sharedLinks:(void (^)(NSArray* links))sharedLinks
             failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Share by link a file or folder, a link will be generated for public sharing.
+ *
+ *  @param path     The path string pointing to the file or folder.
+ *  @param success  A block to be executed when the operation is successful. This block has no
+ *                  return value and takes one argument: a dictionary containing the generated
+ *                  link metadata.
+ *  @param failure  A block to be executed when the operation fails. This block has no return
+ *                  values and takes one argument: the `NSError` object describing the error
+ *                  that occurred.
+ */
 - (void)linkForPath:(NSString*)path
             success:(void (^)(NSDictionary* info))success
             failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Change the time of expiration of a share link.
+ *
+ *  @param ttl              The time in seconds for the link duration.
+ *  @param linkIdentifier   The link identifier string.
+ *  @param success          A block to be executed when the operation is successful. This block has
+ *                          no return value and takes no argument.
+ *  @param failure          A block to be executed when the operation fails. This block has no 
+ *                          return values and takes one argument: the `NSError` object describing 
+ *                          the error that occurred.
+ */
 - (void)setLinkTTL:(NSUInteger)ttl
     linkIdentifier:(NSString*)linkIdentifier
            success:(void(^)(void))success
            failure:(void(^)(NSError* error))failure;
 
+/**
+ *  Delete a share link.
+ *
+ *  @param linkIdentifier   The link identifier string.
+ *  @param success          A block to be executed when the operation is successful. This block has
+ *                          no return value and takes no argument.
+ *  @param failure          A block to be executed when the operation fails. This block has no
+ *                          return values and takes one argument: the `NSError` object describing
+ *                          the error that occurred.
+ */
 - (void)deleteLink:(NSString*)linkIdentifier
            success:(void(^)(void))success
            failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Invite users to collaborate in a folder.
+ *
+ *  @param path     The path string pointing to the folder.
+ *  @param emails   The `NSArray` containing a the emails (as `NSString`) of the users to be 
+ *                  invited.
+ *  @param success  A block to be executed when the operation is successful (or partially
+ *                  successful). This block takes two arguments: the info contains the metadata
+ *                  of the new collaboration folder, the error will be nil if all users are 
+ *                  successfully invited, otherwise it will contain information about which emails
+ *                  failed.
+ *  @param failure  A block to be executed when the operation fails. This block has no
+ *                  return values and takes one argument: the `NSError` object describing
+ *                  the error that occurred.
+ */
 - (void)shareFolderAtPath:(NSString*)path
                      with:(NSArray*)emails
                   success:(void (^)(NSDictionary* info, NSError* error))success
                   failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Removes a user from a collaboration folder.
+ *
+ *  @param path             The path string pointing to the collaboration folder.
+ *  @param userIdentifier   The user identifier string.
+ *  @param success          A block to be executed when the operation is successful. This block has
+ *                          no return value and takes no argument.
+ *  @param failure          A block to be executed when the operation fails. This block has no
+ *                          return values and takes one argument: the `NSError` object describing
+ *                          the error that occurred.
+ */
 - (void)removeUserFromShareAtPath:(NSString*)path
                              user:(NSString*)userIdentifier
                           success:(void (^)(void))success
                           failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Retrieve, or create if none exists yet, a short URL for a share by link of a file or folder.
+ *
+ *  @param shareIdentifier  The share identifier string.
+ *  @param success          A block to be executed when the operation is successful. This block 
+ *                          takes one argument: the short url string.
+ *  @param failure          A block to be executed when the operation fails. This block has no
+ *                          return values and takes one argument: the `NSError` object describing
+ *                          the error that occurred.
+ */
 - (void)shortURLForShare:(NSString*)shareIdentifier
                  success:(void (^)(NSString* url))success
                  failure:(void (^)(NSError* error))failure;
 
+/**
+ *  Destroy a short URL.
+ *
+ *  @param shortURL The short URL string.
+ *  @param success  A block to be executed when the operation is successful. This block takes one 
+ *                  argument: the identifer of the share to which the short URL was pointing.
+ *  @param failure  A block to be executed when the operation fails. This block has no
+ *                  return values and takes one argument: the `NSError` object describing
+ *                  the error that occurred.
+ */
 - (void)destroyShortURL:(NSString*)shortURL
                 success:(void (^)(NSString* shareIdentifier))success
                 failure:(void (^)(NSError* error))failure;

@@ -28,21 +28,51 @@
 
 
 /**
- *
+ * `MCSession` represents an user session in an application. It handles the authentication of a 
+ * user to the MEOCloud and subsequent application authorization token retrieval.
  */
 @interface MCSession : NSObject
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BDBOAuth1SessionManager *networkManager;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL isLinked;
-
-
-+ (MCSession*)sharedSession;
 @property (NS_NONATOMIC_IOSONLY, getter=isAuthorized, readonly) BOOL authorized;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL logout;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) BDBOAuth1SessionManager *newNetworkManager;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSError* authorizationError;
+
+/**
+ *  If a `MCSession` instance exists, that instance is returned, otherwise `nil`.
+ *
+ *  @return The `MCSession` instance that was first initialized, otherwise `nil`.
+ */
++ (MCSession*)sharedSession;
+
+/**
+ *  Initializes a `MCSession` instance.
+ *
+ *  @param consumerKey      The MEOCloud application key.
+ *  @param consumerSecret   The MEOCloud application secret.
+ *  @param callbackUrl      A string containing the URL scheme for the application to be called
+ *                          upon successful user authentication in the browser.
+ */
 - (void)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret callbackUrl:(NSString*)callbackUrl;
+
+/**
+ *  Requests the authentication of a user and application authorization.
+ *
+ *  @param sender   The view controller from which this method is called.
+ */
 - (void)linkFromController:(id)sender;
+
+/**
+ *  Handles the browser callback to the application to finish the authorization process.
+ *  This method should be called from within `application:openURL:sourceApplication:annotation` in
+ *  the application delegate.
+ *
+ *  @param url The URL argument of the above method.
+ *
+ *  @return `YES` if the URL scheme is valid, otherwise `NO`.
+ */
 - (BOOL)handleAuthorizationCallbackURL:(NSURL*)url;
 
 @end
