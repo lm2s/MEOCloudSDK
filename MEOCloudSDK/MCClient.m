@@ -25,7 +25,7 @@
 #import "MCShare.h"
 #import "MCLink.h"
 #import "URLConnection.h"
-#import "AFDownloadRequestOperation/AFDownloadRequestOperation.h"
+#import "AFDownloadRequestOperation.h"
 
 NSString* const MCClientErrorDomain = @"com.lm2s.meocloud.sdk.client";
 
