@@ -80,7 +80,13 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
     thumbnails_queue = dispatch_queue_create("com.lm2s.meocloud.sdk.thumbnails", NULL);
     generic_queue = dispatch_queue_create("com.lm2s.meocloud.sdk.generic", NULL);
     uploads_queue = dispatch_queue_create("com.lm2s.meocloud.sdk.uploads", NULL);
-    self.accessType = @"meocloud";
+    if (_session.isSandbox) {
+        self.accessType = @"sandbox";
+    }
+    else {
+        self.accessType = @"meocloud";
+    }
+    
     self.apiVersion = @"1";
 }
 

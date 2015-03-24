@@ -50,7 +50,7 @@ static MCSession *sharedSession = nil;
     sharedSession = session;
 }
 
-- (instancetype)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret callbackUrl:(NSString*)callbackUrl {
+- (instancetype)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret urlScheme:(NSString*)urlScheme sandbox:(BOOL)sandbox {
     self = [super init];
     if (self) {
         NSURL *baseURL = [NSURL URLWithString:@"https://meocloud.pt/"];
@@ -58,7 +58,8 @@ static MCSession *sharedSession = nil;
         
         _consumerKey = consumerKey;
         _consumerSecret = consumerSecret;
-        _callbackUrl = callbackUrl;
+        _callbackUrl = urlScheme;
+        _isSandbox = sandbox;
         
         _networkManager = [[BDBOAuth1SessionManager alloc] initWithBaseURL:baseURL consumerKey:consumerKey consumerSecret:consumerSecret];
         if(self.networkManager.isAuthorized) {
@@ -76,7 +77,7 @@ static MCSession *sharedSession = nil;
 - (void)monitorReachability {
     NSOperationQueue *operationQueue = self.networkManager.operationQueue;
     [self.networkManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        NSLog(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
+//        NSLog(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
         switch (status) {
             case AFNetworkReachabilityStatusReachableViaWWAN:
             case AFNetworkReachabilityStatusReachableViaWiFi:
@@ -124,14 +125,14 @@ static MCSession *sharedSession = nil;
 - (BOOL)handleAuthorizationCallbackURL:(NSURL*)url {
     BOOL validScheme = NO;
     NSDictionary *parameters = [NSDictionary bdb_dictionaryFromQueryString:url.absoluteString];
-    if (parameters[@"oauth_token"] && parameters[@"minhanuvem://success?oauth_verifier"]) {
+    NSString* urlParam = [NSString stringWithFormat:@"%@://success?oauth_verifier", _callbackUrl];
+    if (parameters[@"oauth_token"] && parameters[urlParam]) {
         validScheme = YES;
         [_networkManager fetchAccessTokenWithPath:@"/oauth/access_token" method:@"POST" requestToken:[BDBOAuth1Credential credentialWithQueryString:url.query]
                                           success:^(BDBOAuth1Credential *accessToken) {
                                               [_networkManager.requestSerializer saveAccessToken:accessToken];
                                               [self setValue:@(YES) forKey:@"accountAuthorized"];
                                               [self monitorReachability];
-//                                              NSLog(@"fetchAccessTokenWithPath SUCCESS: %@", accessToken);
                                           }
                                           failure:^(NSError *error) {
                                               [self setValue:@(NO) forKey:@"accountAuthorized"];

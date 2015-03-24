@@ -39,6 +39,7 @@
 @property (NS_NONATOMIC_IOSONLY, getter=isAuthorized, readonly) BOOL authorized;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL logout;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSError* authorizationError;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL isSandbox;
 
 /**
  *  A `MCSession` shared instance.
@@ -65,10 +66,13 @@
  *
  *  @param consumerKey      The MEOCloud application key.
  *  @param consumerSecret   The MEOCloud application secret.
- *  @param callbackUrl      A string containing the URL scheme for the application to be called
+ *  @param urlScheme        A string containing the URL scheme for the application to be called
  *                          upon successful user authentication in the browser.
  */
-- (instancetype)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret callbackUrl:(NSString*)callbackUrl NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithKey:(NSString*)consumerKey
+                     secret:(NSString*)consumerSecret
+                  urlScheme:(NSString*)urlScheme
+                    sandbox:(BOOL)sandbox NS_DESIGNATED_INITIALIZER;
 
 /**
  *  Requests the authentication of a user and application authorization.
