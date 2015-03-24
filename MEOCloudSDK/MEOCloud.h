@@ -27,10 +27,10 @@
 #import "MCClient.h"
 #import "MCSession.h"
 
-#import "Model/MCAccount.h"
-#import "Model/MCLink.h"
-#import "Model/MCMetadata.h"
-#import "Model/MCShare.h"
-#import "Model/MCUser.h"
+#import "MCAccount.h"
+#import "MCLink.h"
+#import "MCMetadata.h"
+#import "MCShare.h"
+#import "MCUser.h"
 
 #endif

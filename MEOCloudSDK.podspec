@@ -27,9 +27,10 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '7.0'
   s.requires_arc = true
 
-  s.public_header_files = 'MEOCloudSDK/**/*.h'
-  s.source_files = 'MEOCloudSDK/**/*.m'
+  #s.public_header_files = 'MEOCloudSDK/*.h'
+  s.source_files = 'MEOCloudSDK/*.{h,m}', 'MEOCloudSDK/Model/*.{h,m}', 'MEOCloudSDK/AFDownloadRequestOperation/*.{h,m}'
 
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'AFNetworking', '~> 2.5'
+  s.dependency "BDBOAuth1Manager", "~> 1.5.0"
 end

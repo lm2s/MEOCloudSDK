@@ -22,8 +22,8 @@
 
 #import <Foundation/Foundation.h>
 #import "MCSession.h"
-#import "Model/MCMetadata.h"
-#import "Model/MCAccount.h"
+#import "MCMetadata.h"
+#import "MCAccount.h"
 
 extern NSString* const MCClientErrorDomain;
 
@@ -104,7 +104,7 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat){
  * For use of this class, first create a session and then use the initWithSession method to
  * create an instance of this class.
  */
-@interface MCClient : NSObject
+@interface MCClient : NSObject <NSURLSessionDownloadDelegate>
 
 /**
  *  Initializes an `MCClient` object with the specified session.

@@ -5,6 +5,19 @@
       location = "group:MEOCloudSDK"
       name = "MEOCloudSDK">
       <Group
+         location = "group:AFDownloadRequestOperation"
+         name = "AFDownloadRequestOperation">
+         <FileRef
+            location = "group:AFDownloadRequestOperation.h">
+         </FileRef>
+         <FileRef
+            location = "group:AFDownloadRequestOperation.m">
+         </FileRef>
+         <FileRef
+            location = "group:LICENCE">
+         </FileRef>
+      </Group>
+      <Group
          location = "group:Model"
          name = "Model">
          <FileRef

@@ -25,7 +25,7 @@
 #import "MCShare.h"
 #import "MCLink.h"
 #import "URLConnection.h"
-#import <AFDownloadRequestOperation/AFDownloadRequestOperation.h>
+#import "AFDownloadRequestOperation/AFDownloadRequestOperation.h"
 
 NSString* const MCClientErrorDomain = @"com.lm2s.meocloud.sdk.client";
 
@@ -806,6 +806,8 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
     [fm removeItemAtPath:directory error:&error];
     [fm removeItemAtPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"Incomplete"] error:&error];
 }
+
+#pragma mark - Download Helper
 
 
 @end
