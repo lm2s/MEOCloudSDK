@@ -54,9 +54,6 @@
          location = "group:MCSession.m">
       </FileRef>
       <FileRef
-         location = "group:MEOCloudErrors.h">
-      </FileRef>
-      <FileRef
          location = "group:NSDate+Utils.h">
       </FileRef>
       <FileRef

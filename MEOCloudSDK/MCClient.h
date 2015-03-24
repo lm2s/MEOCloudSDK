@@ -22,8 +22,8 @@
 
 #import <Foundation/Foundation.h>
 #import "MCSession.h"
-#import "MCMetadata.h"
-#import "MCAccount.h"
+#import "Model/MCMetadata.h"
+#import "Model/MCAccount.h"
 
 extern NSString* const MCClientErrorDomain;
 
