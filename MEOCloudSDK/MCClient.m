@@ -65,7 +65,7 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
 @implementation MCClient
 
 - (instancetype)initWithSession:(MCSession *)session {
-    self = [self init];
+    self = [super init];
     if (self) {
         _session = session;
         [self commonInit];
@@ -806,8 +806,6 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
     [fm removeItemAtPath:directory error:&error];
     [fm removeItemAtPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"Incomplete"] error:&error];
 }
-
-#pragma mark - Download Helper
 
 
 @end

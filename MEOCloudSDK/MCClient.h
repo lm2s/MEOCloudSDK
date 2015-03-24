@@ -104,7 +104,7 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat){
  * For use of this class, first create a session and then use the initWithSession method to
  * create an instance of this class.
  */
-@interface MCClient : NSObject <NSURLSessionDownloadDelegate>
+@interface MCClient : NSObject
 
 /**
  *  Initializes an `MCClient` object with the specified session.
@@ -143,10 +143,10 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat){
                failure:(void (^)(NSError *error))failure;
 
 // TODO
-- (void)metadataAtPath:(NSString*)path
-              contents:(BOOL)contents
-               success:(void (^)(NSArray *metadata))success
-               failure:(void (^)(NSError *error))failure;
+//- (void)metadataAtPath:(NSString*)path
+//              contents:(BOOL)contents
+//               success:(void (^)(NSArray *metadata))success
+//               failure:(void (^)(NSError *error))failure;
 
 /**
  *  Downloads a file from the MEOCloud, saving to a local temporary directory.
