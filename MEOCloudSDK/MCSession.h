@@ -28,8 +28,9 @@
 
 
 /**
- * `MCSession` represents an user session in an application. It handles the authentication of a 
- * user to the MEOCloud and subsequent application authorization token retrieval.
+ * `MCSession` represents an user session. The authorization and authentication of a
+ * user to the MEOCloud and subsequent application authorization token retrieval is handled
+ * by this class.
  */
 @interface MCSession : NSObject
 
@@ -37,25 +38,37 @@
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL isLinked;
 @property (NS_NONATOMIC_IOSONLY, getter=isAuthorized, readonly) BOOL authorized;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL logout;
-@property (NS_NONATOMIC_IOSONLY, readonly, copy) BDBOAuth1SessionManager *newNetworkManager;
 @property (NS_NONATOMIC_IOSONLY, readonly) NSError* authorizationError;
 
 /**
- *  If a `MCSession` instance exists, that instance is returned, otherwise `nil`.
+ *  A `MCSession` shared instance.
  *
- *  @return The `MCSession` instance that was first initialized, otherwise `nil`.
+ *  Usually this is the session that will be used through out the application. Think of it as 
+ *  a singleton.
+ *
+ *  @return The `MCSession` shared instance.
  */
 + (MCSession*)sharedSession;
 
 /**
+ *  Setter for the instance of `MCSession` to be shared.
+ *
+ *  @param session An `MCSession` instance.
+ */
+- (void)setSharedSession:(MCSession*)session;
+
+/**
  *  Initializes a `MCSession` instance.
+ *
+ *  If used with the `sharedSession` method, the singleton instance will be initialized with
+ *  the credentials used in this method.
  *
  *  @param consumerKey      The MEOCloud application key.
  *  @param consumerSecret   The MEOCloud application secret.
  *  @param callbackUrl      A string containing the URL scheme for the application to be called
  *                          upon successful user authentication in the browser.
  */
-- (void)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret callbackUrl:(NSString*)callbackUrl;
+- (instancetype)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret callbackUrl:(NSString*)callbackUrl NS_DESIGNATED_INITIALIZER;
 
 /**
  *  Requests the authentication of a user and application authorization.

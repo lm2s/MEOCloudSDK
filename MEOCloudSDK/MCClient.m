@@ -24,7 +24,6 @@
 #import "NSString+Utils.h"
 #import "MCShare.h"
 #import "MCLink.h"
-#import "MEOCloudErrors.h"
 #import "URLConnection.h"
 #import <AFDownloadRequestOperation/AFDownloadRequestOperation.h>
 
@@ -48,6 +47,7 @@ static const NSString* kSetLinkTTLRequest = @"SetLinkTTL";
 static const NSString* kDeleteLinkRequest = @"DeleteLink";
 static const NSString* kShortenURLRequest = @"ShortenLinkURL";
 static const NSString* kDestroyShortURLRequest = @"DestroyShortURL";
+static const NSString* kThumbnailsRequest = @"Thumbnails";
 
 @interface MCClient() {
     dispatch_queue_t thumbnails_queue;
@@ -232,22 +232,17 @@ static const NSString* kDestroyShortURLRequest = @"DestroyShortURL";
 }
 
 
-- (void)thumbnailForFile:(MCMetadata*)fileMetadata
-                    size:(MCThumbnailSize)size
-                  format:(MCThumbnailFormat)format
-                    crop:(BOOL)crop
-                 success:(void (^)(UIImage* thumbnailImage))success
-                 failure:(void (^)(NSError* error))failure {
+- (void)thumbnailAtPath:(NSString*)path
+                   size:(MCThumbnailSize)size
+                 format:(MCThumbnailFormat)format
+                   crop:(BOOL)crop
+                success:(void (^)(UIImage* thumbnail))success
+                failure:(void (^)(NSError* error))failure {
     
     // https://api-content.meocloud.pt/1/Thumbnails/[meocloud|sandbox]/[pathname]?params
     // format: jpeg ou png
     // size: xs(32x32) ou s(64x64) ou m(120x120) ou l(640x480) ou xl(1024x768)
     // crop: true ou false
-    
-    if (!fileMetadata.hasThumbnail) {
-        NSError *error = [NSError errorWithDomain:@"com.lm2s.meocloud" code:0 userInfo:@{@"error" : @"no thumbnail exists"}];
-        failure(error);
-    }
     
     NSString *sizeString;
     switch (size) {
@@ -287,20 +282,26 @@ static const NSString* kDestroyShortURLRequest = @"DestroyShortURL";
     NSString* cropString = crop ? @"true" : @"false";
     
     dispatch_async(thumbnails_queue, ^{
-        NSString *url = [NSString stringWithFormat:@"https://api-content.meocloud.pt/1/Thumbnails/meocloud%@?format=%@&size=%@&crop=%@", [fileMetadata.path encodeToPercentEscapeString],formatString,sizeString,cropString];
+        // IMPROVE: Nasty.. There must be a better way, but NSURL doesn't encode '(' or ')', which generates problems.
+        NSString* url = [NSString stringWithFormat:@"%@/%@/%@", self.apiVersion, kThumbnailsRequest, self.accessType];
+        url = [url stringByAppendingPathComponent:[path encodeToPercentEscapeString]];
+        url = [NSString stringWithFormat:@"%@/%@", kAPIContentUrl, url];
+        
+        NSDictionary* queryParams = @{@"format" : formatString, @"size" : sizeString, @"crop" : cropString};
         
         NSError *serializationError = nil;
-        NSMutableURLRequest *request = [_session.networkManager.requestSerializer requestWithMethod:@"GET" URLString:url parameters:nil error:&serializationError];
+        NSMutableURLRequest *request = [_session.networkManager.requestSerializer requestWithMethod:@"GET" URLString:url parameters:queryParams error:&serializationError];
         if (serializationError) {
             
         }
+
         
         NSProgress *progress;
         
         NSURLSessionDownloadTask *task = [_session.networkManager downloadTaskWithRequest:request
                                                                                  progress:&progress
                                                                               destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
-                                                                                  return [targetPath URLByAppendingPathExtension:@"png"];
+                                                                                  return [targetPath URLByAppendingPathExtension:formatString];
                                                                               }
                                                                         completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
                                                                             if (error) {

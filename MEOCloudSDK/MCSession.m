@@ -25,7 +25,6 @@
 
 @interface MCSession()
 @property (nonatomic, strong) BDBOAuth1SessionManager* networkManager;
-
 @property (nonatomic, strong) NSString *consumerKey;
 @property (nonatomic, strong) NSString *consumerSecret;
 @property (nonatomic, strong) NSString *callbackUrl;
@@ -34,16 +33,40 @@
 @end
 
 @implementation MCSession
+static MCSession *sharedSession = nil;
 
 + (MCSession*)sharedSession {
-    static MCSession *sharedMCSession = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMCSession = [[self alloc] init];
-        [sharedMCSession commonInit];
+//    static MCSession *sharedSession = nil;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        sharedSession = [[self alloc] init];
+//        [sharedSession commonInit];
+//        
+//    });
+    return sharedSession;
+}
+
+- (void)setSharedSession:(MCSession*)session {
+    sharedSession = session;
+}
+
+- (instancetype)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret callbackUrl:(NSString*)callbackUrl {
+    self = [super init];
+    if (self) {
+        NSURL *baseURL = [NSURL URLWithString:@"https://meocloud.pt/"];
+        _baseUrl = baseURL;
         
-    });
-    return sharedMCSession;
+        _consumerKey = consumerKey;
+        _consumerSecret = consumerSecret;
+        _callbackUrl = callbackUrl;
+        
+        _networkManager = [[BDBOAuth1SessionManager alloc] initWithBaseURL:baseURL consumerKey:consumerKey consumerSecret:consumerSecret];
+        if(self.networkManager.isAuthorized) {
+            [self setValue:@(YES) forKey:@"accountAuthorized"];
+            [self monitorReachability];
+        }
+    }
+    return self;
 }
 
 - (void)commonInit {
@@ -80,25 +103,9 @@
     return _networkManager.isAuthorized;
 }
 
-- (void)initWithKey:(NSString*)consumerKey secret:(NSString*)consumerSecret callbackUrl:(NSString*)callbackUrl {
-    
-    NSURL *baseURL = [NSURL URLWithString:@"https://meocloud.pt/"];
-    _baseUrl = baseURL;
-    
-    _consumerKey = consumerKey;
-    _consumerSecret = consumerSecret;
-    _callbackUrl = callbackUrl;
-    
-    _networkManager = [[BDBOAuth1SessionManager alloc] initWithBaseURL:baseURL consumerKey:consumerKey consumerSecret:consumerSecret];
-    if(self.networkManager.isAuthorized) {
-        [self setValue:@(YES) forKey:@"accountAuthorized"];
-        [self monitorReachability];
-    }
-}
-
-- (BDBOAuth1SessionManager*)newNetworkManager {
-    return [[BDBOAuth1SessionManager alloc] initWithBaseURL:_baseUrl consumerKey:_consumerKey consumerSecret:_consumerSecret];
-}
+//- (BDBOAuth1SessionManager*)cloneNetworkManager {
+//    return [[BDBOAuth1SessionManager alloc] initWithBaseURL:_baseUrl consumerKey:_consumerKey consumerSecret:_consumerSecret];
+//}
 
 - (void)linkFromController:(id)sender {
     [_networkManager fetchRequestTokenWithPath:@"/oauth/request_token"

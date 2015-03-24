@@ -19,6 +19,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+//
+// Based on SQiShER gist: https://gist.github.com/SQiShER/5009086
 
 #import "URLConnection.h"
 
@@ -97,7 +99,6 @@ typedef void (^ProgressBlock)( long long bytesReceived,  long long totalBytes);
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-//    NSLog(@"Uploaded %d,  %d (%ld)", bytesWritten, totalBytesWritten, self.received);
     self.progressBlock(bytesWritten, totalBytesExpectedToWrite);
 }
 

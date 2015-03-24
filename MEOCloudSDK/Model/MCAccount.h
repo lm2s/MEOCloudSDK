@@ -23,7 +23,6 @@
 #import <Foundation/Foundation.h>
 
 @interface MCAccount : NSObject
-
 @property (NS_NONATOMIC_IOSONLY, strong) NSString* name;
 @property (NS_NONATOMIC_IOSONLY, strong) NSString* identifier;
 @property (NS_NONATOMIC_IOSONLY, strong) NSDate* lastEvent;
@@ -35,5 +34,4 @@
 @property (NS_NONATOMIC_IOSONLY, strong) NSString* language;
 
 - (instancetype)initWithDictionary:(NSDictionary*)dictionary NS_DESIGNATED_INITIALIZER;
-
 @end

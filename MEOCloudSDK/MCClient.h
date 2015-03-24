@@ -53,16 +53,43 @@ typedef NS_ENUM(NSInteger, MCClientError){
     kUploadAbortRequested = -5
 };
 
-typedef NS_ENUM(NSInteger, MCThumbnailSize) {
+/**
+ *  Thumbnail sizes.
+ */
+typedef NS_ENUM(NSInteger, MCThumbnailSize){
+    /**
+     *  32x32
+     */
     MCThumbnailSizeXS,
+    /**
+     *  64x64
+     */
     MCThumbnailSizeS,
+    /**
+     *  120x120
+     */
     MCThumbnailSizeM,
+    /**
+     *  640x640
+     */
     MCThumbnailSizeL,
+    /**
+     *  1024x1024
+     */
     MCThumbnailSizeXL
 };
 
-typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
+/**
+ *  Thumbnail file format.
+ */
+typedef NS_ENUM(NSInteger, MCThumbnailFormat){
+    /**
+     *  JPEG
+     */
     MCThumbnailFormatJPEG,
+    /**
+     *  PNG
+     */
     MCThumbnailFormatPNG
 };
 
@@ -70,10 +97,9 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
 /**
  * `MCClient` exposes the MEOCloud API functionality.
  *
- * It allows the retrieval of metadata,
- * file and folder manipulation, file download and upload, generation of sharing links for files
- * and folders, invitation of other users to collaborate in a folder, manipulation of shared folders
- * options, etc.
+ * It allows the retrieval of metadata, file and folder manipulation, file download and upload, 
+ * generation of sharing links for files and folders, invitation of other users to collaborate in a 
+ * folder, manipulation of shared folders options, etc.
  *
  * For use of this class, first create a session and then use the initWithSession method to
  * create an instance of this class.
@@ -177,13 +203,25 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
  */
 - (void)clearCachedFiles;
 
-// TODO
-- (void)thumbnailForFile:(MCMetadata*)fileMetadata
-                    size:(MCThumbnailSize)size
-                  format:(MCThumbnailFormat)format
-                    crop:(BOOL)crop
-                 success:(void (^)(UIImage* thumbnailImage))success
-                 failure:(void (^)(NSError* error))failure;
+/**
+ *  Retrieve a file thumbnail.
+ *
+ *  @param path     The path string pointing to the file.
+ *  @param size     An option describing which size is preferable.
+ *  @param format   The file type of the thumbnail (PNG or JPEG).
+ *  @param crop     Should the thumbnail be cropped.
+ *  @param success  A block to be executed when the operation is successful. This block has no 
+ *                  return value and one argument: an `UIImage` representation of the thumbnail.
+ *  @param failure  A block to be executed when the operation fails. This block has no return
+ *                  values and takes one argument: the `NSError` object describing the error
+ *                  that occurred.
+ */
+- (void)thumbnailAtPath:(NSString*)path
+                   size:(MCThumbnailSize)size
+                 format:(MCThumbnailFormat)format
+                   crop:(BOOL)crop
+                success:(void (^)(UIImage* thumbnail))success
+                failure:(void (^)(NSError* error))failure;
 
 /**
  *  Creates a folder in MEOCloud.
@@ -202,12 +240,12 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
              success:(void (^)(NSDictionary* info))success
              failure:(void (^)(NSError* error))failure;
 // TODO
-- (void)uploadToPath:(NSString*)path
-            filename:(NSString*)filename
-                data:(NSData*)data
-            progress:(void (^)(unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
-             success:(void (^)(NSDictionary *metadata))success
-             failure:(void (^)(NSError *error))failure;
+//- (void)uploadToPath:(NSString*)path
+//            filename:(NSString*)filename
+//                data:(NSData*)data
+//            progress:(void (^)(unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
+//             success:(void (^)(NSDictionary *metadata))success
+//             failure:(void (^)(NSError *error))failure;
 
 /**
  *  Creates a file in the MEOCloud and uploads a stream of data into it.
@@ -274,12 +312,12 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat) {
 /**
  *  Retrive a list of the shared by link files or folders.
  *
- *  @param sharedFolders    A block that is executed after the successful retrieval of the shared by
- *                          link file or folders information. An `NSArray` containing `MCLink` 
- *                          objects is passed in.
- *  @param failure          A block to be executed when the operation fails. This block has no return
- *                          values and takes one argument: the `NSError` object describing the error
- *                          that occurred.
+ *  @param sharedLinks  A block that is executed after the successful retrieval of the shared by
+ *                      link file or folders information. An `NSArray` containing `MCLink`
+ *                      objects is passed in.
+ *  @param failure      A block to be executed when the operation fails. This block has no return
+ *                      values and takes one argument: the `NSError` object describing the error
+ *                      that occurred.
  */
 - (void)sharedLinks:(void (^)(NSArray* links))sharedLinks
             failure:(void (^)(NSError* error))failure;
