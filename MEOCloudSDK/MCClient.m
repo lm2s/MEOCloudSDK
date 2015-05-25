@@ -27,6 +27,10 @@
 #import "URLConnection.h"
 #import "AFDownloadRequestOperation.h"
 
+#ifdef TARGET_OS_MAC
+@import AppKit;
+#endif
+
 NSString* const MCClientErrorDomain = @"com.lm2s.meocloud.sdk.client";
 
 static const NSString* kPublicAPIUrl = @"https://publicapi.meocloud.pt";
@@ -242,7 +246,11 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
                    size:(MCThumbnailSize)size
                  format:(MCThumbnailFormat)format
                    crop:(BOOL)crop
+#ifdef TARGET_OS_MAC
+                success:(void (^)(NSImage* thumbnail))success
+#else
                 success:(void (^)(UIImage* thumbnail))success
+#endif
                 failure:(void (^)(NSError* error))failure {
     
     // https://api-content.meocloud.pt/1/Thumbnails/[meocloud|sandbox]/[pathname]?params
@@ -315,8 +323,11 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
                                                                             }
                                                                             else {
                                                                                 NSData *imageData = [NSData dataWithContentsOfURL:filePath];
-                                                                                
+                                                                                #ifdef TARGET_OS_MAC
+                                                                                NSImage *image = [[NSImage alloc] initWithData:imageData];
+                                                                                #else
                                                                                 UIImage *image = [[UIImage alloc] initWithData:imageData scale:[[UIScreen mainScreen] scale]];
+                                                                                #endif
                                                                                 success(image);
                                                                             }
                                                                         }];
@@ -325,6 +336,144 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
 }
 
 #pragma mark - Upload
+
+- (void)uploadToPath:(NSString*)path
+            filename:(NSString*)filename
+           overwrite:(BOOL)overwrite
+       sourceFileUrl:(NSURL*)sourceFileUrl
+            progress:(void (^)(unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
+             success:(void (^)(NSDictionary *metadata))success
+             failure:(void (^)(NSError *error))failure {
+    
+    // https://api-content.meocloud.pt/1/ChunkedUpload
+    // ...
+    // https://api-content.meocloud.pt/1/CommitChunkedUpload
+    
+    NSParameterAssert(path != nil && filename != nil);
+    
+    dispatch_async(uploads_queue, ^{
+        NSString *remotePath = [path stringByAppendingPathComponent:filename];
+        
+        NSString* chunkBaseUrl = [NSString stringWithFormat:@"%@/%@/%@", kAPIContentUrl, self.apiVersion, kUploadChunkRequest];
+        NSString* requestUrl = chunkBaseUrl;
+        
+        NSLog(@"Upload started: %@", remotePath);
+        
+        NSString* uploadIdentifier = nil;
+        long long offset = 0;
+        NSData* dataChunkToUpload;
+        
+        unsigned long long fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:sourceFileUrl.path error:nil].fileSize;
+        
+        // Send the chunks
+        //
+        NSFileHandle* fileHandle = [NSFileHandle fileHandleForReadingAtPath:sourceFileUrl.path];
+        if (!fileHandle) {
+            failure([NSError errorWithDomain:MCClientErrorDomain code:kUploadAbortRequested userInfo:@{@"description" : @"unable to get file handle"}]);
+        }
+        
+        BOOL eof = NO;
+        while (!eof) {
+            @try {
+                [fileHandle seekToFileOffset: offset];
+                dataChunkToUpload = [fileHandle readDataOfLength: 1024 * 1000];
+            }
+            @catch (NSException *exception) {
+                failure([NSError errorWithDomain:MCClientErrorDomain code:kUploadAbortRequested userInfo:@{@"description" : @"error reading file"}]);
+                return;
+            }
+            @finally {
+
+            }
+            
+            if (uploadIdentifier) {
+                requestUrl = [NSString stringWithFormat:@"%@?upload_id=%@&offset=%lld", chunkBaseUrl, uploadIdentifier, offset];
+            }
+            
+            NSError* serializationError = nil;
+            NSMutableURLRequest* uploadChunkRequest = [_session.networkManager.requestSerializer requestWithMethod:@"PUT" URLString:requestUrl parameters:nil error:&serializationError];
+            if (serializationError) {
+                failure(serializationError);
+                return;
+            }
+            [uploadChunkRequest setHTTPBody: dataChunkToUpload];
+            
+            NSURLResponse* response;
+            NSError* uploadChunkRequestError;
+            NSData* responseData = [URLConnection sendSynchronousRequest:uploadChunkRequest
+                                                                progress:^(long long bytesTransfered, long long totalBytes) {
+                                                                    progress(bytesTransfered, fileSize);
+                                                                }
+                                                       returningResponse:&response
+                                                                   error:&uploadChunkRequestError];
+            if (uploadChunkRequestError) {
+                failure(uploadChunkRequestError);
+                return;
+            }
+            
+            NSError* jsonDecodeError;
+            NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                         options:NSJSONReadingMutableContainers
+                                                                           error:&jsonDecodeError];
+            if (jsonDecodeError) {
+                failure(jsonDecodeError);
+                return;
+            }
+            
+            if (jsonResponse[@"upload_id"]) {
+                uploadIdentifier = jsonResponse[@"upload_id"];
+            }
+            
+            if (jsonResponse[@"offset"]) {
+                offset = [jsonResponse[@"offset"] longLongValue];
+            }
+            
+            if (offset >= fileSize-1) {
+                eof = YES;
+            }
+        }
+
+        
+        // Commit
+        //
+        
+        // IMPROVE: Nasty.. There must be a better way, but NSURL doesn't encode '(' or ')', which generates problems.
+        NSString* commitUrl = [NSString stringWithFormat:@"%@/%@/%@", self.apiVersion, kUploadCommitRequest, self.accessType];
+        commitUrl = [commitUrl stringByAppendingPathComponent:[remotePath encodeToPercentEscapeString]];
+        commitUrl = [NSString stringWithFormat:@"%@/%@", kAPIContentUrl, commitUrl];
+        
+        NSDictionary* commitPostParams = @{@"upload_id" : uploadIdentifier,
+                                           @"overwrite" : (overwrite ? @"True" : @"False")};
+        
+        NSLog(@"Upload started: %@", commitUrl);
+        
+        NSError* serializationError = nil;
+        NSMutableURLRequest* uploadCommitRequest = [_session.networkManager.requestSerializer requestWithMethod:@"POST" URLString:commitUrl parameters:commitPostParams error:&serializationError];
+        if (serializationError) {
+            failure(serializationError);
+            return;
+        }
+        
+        NSURLResponse* response = nil;
+        NSError* uploadCommitRequestError = nil;
+        NSData *commitResponseData = [NSURLConnection sendSynchronousRequest:uploadCommitRequest returningResponse:&response error:&uploadCommitRequestError];
+        if (uploadCommitRequestError || ((NSHTTPURLResponse*)response).statusCode >= 300) {
+            failure(uploadCommitRequestError);
+            return;
+        }
+        
+        NSError* jsonDecodeError;
+        NSDictionary *metadata = [NSJSONSerialization JSONObjectWithData:commitResponseData
+                                                                 options:NSJSONReadingMutableContainers
+                                                                   error:&jsonDecodeError];
+        if (jsonDecodeError) {
+            
+        }
+        
+        success(metadata);
+    });
+
+}
 
 - (void)uploadToPath:(NSString*)path
             filename:(NSString*)filename

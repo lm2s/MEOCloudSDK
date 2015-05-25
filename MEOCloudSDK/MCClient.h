@@ -50,7 +50,10 @@ typedef NS_ENUM(NSInteger, MCClientError){
     /**
      *  When an upload abort is requested.
      */
-    kUploadAbortRequested = -5
+    kUploadAbortRequested = -5,
+    
+    kUnableToGetFileHandle = -6,
+    kFileReadError = -7
 };
 
 /**
@@ -216,12 +219,21 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat){
  *                  values and takes one argument: the `NSError` object describing the error
  *                  that occurred.
  */
+#ifdef TARGET_OS_MAC
+- (void)thumbnailAtPath:(NSString*)path
+                   size:(MCThumbnailSize)size
+                 format:(MCThumbnailFormat)format
+                   crop:(BOOL)crop
+                success:(void (^)(NSImage* thumbnail))success
+                failure:(void (^)(NSError* error))failure;
+#else
 - (void)thumbnailAtPath:(NSString*)path
                    size:(MCThumbnailSize)size
                  format:(MCThumbnailFormat)format
                    crop:(BOOL)crop
                 success:(void (^)(UIImage* thumbnail))success
                 failure:(void (^)(NSError* error))failure;
+#endif
 
 /**
  *  Creates a folder in MEOCloud.
@@ -246,6 +258,14 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat){
 //            progress:(void (^)(unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
 //             success:(void (^)(NSDictionary *metadata))success
 //             failure:(void (^)(NSError *error))failure;
+
+- (void)uploadToPath:(NSString*)path
+            filename:(NSString*)filename
+           overwrite:(BOOL)overwrite
+       sourceFileUrl:(NSURL*)sourceFileUrl
+            progress:(void (^)(unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
+             success:(void (^)(NSDictionary *metadata))success
+             failure:(void (^)(NSError *error))failure;
 
 /**
  *  Creates a file in the MEOCloud and uploads a stream of data into it.
