@@ -21,6 +21,9 @@
 // SOFTWARE.
 
 #import "MCSession.h"
+#ifdef TARGET_OS_MAC
+@import AppKit;
+#endif
 
 
 @interface MCSession()
@@ -115,7 +118,13 @@ static MCSession *sharedSession = nil;
                                          scope:nil
                                        success:^(BDBOAuth1Credential *requestToken) {
                                            NSString *authURL = [NSString stringWithFormat:@"https://meocloud.pt/oauth/authorize?oauth_token=%@", requestToken.token];
-                                           [[UIApplication sharedApplication] openURL:[NSURL URLWithString:authURL]];
+#ifdef TARGET_OS_MAC
+                                            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:authURL]];
+#else
+                                            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:authURL]];
+#endif
+                                          
+                                          
                                        }
                                        failure:^(NSError *error) {
                                            NSLog(@"linkFromController Error: %@", error.localizedDescription);
@@ -123,9 +132,11 @@ static MCSession *sharedSession = nil;
 }
 
 - (BOOL)handleAuthorizationCallbackURL:(NSURL*)url {
+    NSParameterAssert(url != nil);
+    
     BOOL validScheme = NO;
     NSDictionary *parameters = [NSDictionary bdb_dictionaryFromQueryString:url.absoluteString];
-    NSString* urlParam = [NSString stringWithFormat:@"%@://success?oauth_verifier", _callbackUrl];
+    NSString* urlParam = [NSString stringWithFormat:@"%@?oauth_verifier", _callbackUrl];
     if (parameters[@"oauth_token"] && parameters[urlParam]) {
         validScheme = YES;
         [_networkManager fetchAccessTokenWithPath:@"/oauth/access_token" method:@"POST" requestToken:[BDBOAuth1Credential credentialWithQueryString:url.query]
