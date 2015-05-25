@@ -27,7 +27,7 @@
 #import "URLConnection.h"
 #import "AFDownloadRequestOperation.h"
 
-#ifdef TARGET_OS_MAC
+#if !TARGET_OS_IPHONE
 @import AppKit;
 #endif
 
@@ -246,7 +246,7 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
                    size:(MCThumbnailSize)size
                  format:(MCThumbnailFormat)format
                    crop:(BOOL)crop
-#ifdef TARGET_OS_MAC
+#if !TARGET_OS_IPHONE
                 success:(void (^)(NSImage* thumbnail))success
 #else
                 success:(void (^)(UIImage* thumbnail))success
@@ -323,7 +323,7 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
                                                                             }
                                                                             else {
                                                                                 NSData *imageData = [NSData dataWithContentsOfURL:filePath];
-                                                                                #ifdef TARGET_OS_MAC
+                                                                                #if !TARGET_OS_IPHONE
                                                                                 NSImage *image = [[NSImage alloc] initWithData:imageData];
                                                                                 #else
                                                                                 UIImage *image = [[UIImage alloc] initWithData:imageData scale:[[UIScreen mainScreen] scale]];
@@ -340,7 +340,7 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
 - (void)uploadToPath:(NSString*)path
             filename:(NSString*)filename
            overwrite:(BOOL)overwrite
-       sourceFileUrl:(NSURL*)sourceFileUrl
+      sourceFilePath:(NSString*)sourceFilePath
             progress:(void (^)(unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
              success:(void (^)(NSDictionary *metadata))success
              failure:(void (^)(NSError *error))failure {
@@ -363,11 +363,12 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
         long long offset = 0;
         NSData* dataChunkToUpload;
         
-        unsigned long long fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:sourceFileUrl.path error:nil].fileSize;
+        unsigned long long fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:sourceFilePath error:nil].fileSize;
+        __block unsigned long long numberOfBytesUploaded = 0;
         
         // Send the chunks
         //
-        NSFileHandle* fileHandle = [NSFileHandle fileHandleForReadingAtPath:sourceFileUrl.path];
+        NSFileHandle* fileHandle = [NSFileHandle fileHandleForReadingAtPath:sourceFilePath];
         if (!fileHandle) {
             failure([NSError errorWithDomain:MCClientErrorDomain code:kUploadAbortRequested userInfo:@{@"description" : @"unable to get file handle"}]);
         }
@@ -402,7 +403,8 @@ static const NSString* kThumbnailsRequest = @"Thumbnails";
             NSError* uploadChunkRequestError;
             NSData* responseData = [URLConnection sendSynchronousRequest:uploadChunkRequest
                                                                 progress:^(long long bytesTransfered, long long totalBytes) {
-                                                                    progress(bytesTransfered, fileSize);
+                                                                    numberOfBytesUploaded += bytesTransfered;
+                                                                    progress(numberOfBytesUploaded, fileSize);
                                                                 }
                                                        returningResponse:&response
                                                                    error:&uploadChunkRequestError];

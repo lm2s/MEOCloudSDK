@@ -25,6 +25,7 @@
 
 @interface MCLink : NSObject
 @property (NS_NONATOMIC_IOSONLY, strong) NSString* url;
+@property (NS_NONATOMIC_IOSONLY, strong) NSString* directUrl;
 @property (NS_NONATOMIC_IOSONLY, strong) NSString* path;
 @property (NS_NONATOMIC_IOSONLY, strong) NSString* relativePath;
 @property (NS_NONATOMIC_IOSONLY, strong) NSString* shareIdentifier;

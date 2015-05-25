@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 #import "MCSession.h"
-#ifdef TARGET_OS_MAC
+#if !TARGET_OS_IPHONE
 @import AppKit;
 #endif
 
@@ -118,7 +118,7 @@ static MCSession *sharedSession = nil;
                                          scope:nil
                                        success:^(BDBOAuth1Credential *requestToken) {
                                            NSString *authURL = [NSString stringWithFormat:@"https://meocloud.pt/oauth/authorize?oauth_token=%@", requestToken.token];
-#ifdef TARGET_OS_MAC
+#if !TARGET_OS_IPHONE
                                             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:authURL]];
 #else
                                             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:authURL]];

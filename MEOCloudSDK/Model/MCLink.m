@@ -45,6 +45,7 @@
     self = [super init];
     if (self) {
         self.url = dictionary[@"url"];
+        self.directUrl = dictionary[@"url_download"];
         self.path = dictionary[@"absolute_path"];
         self.relativePath = dictionary[@"path"];
         self.shareIdentifier = dictionary[@"shareid"];

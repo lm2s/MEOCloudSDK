@@ -219,7 +219,7 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat){
  *                  values and takes one argument: the `NSError` object describing the error
  *                  that occurred.
  */
-#ifdef TARGET_OS_MAC
+#if !TARGET_OS_IPHONE
 - (void)thumbnailAtPath:(NSString*)path
                    size:(MCThumbnailSize)size
                  format:(MCThumbnailFormat)format
@@ -262,7 +262,7 @@ typedef NS_ENUM(NSInteger, MCThumbnailFormat){
 - (void)uploadToPath:(NSString*)path
             filename:(NSString*)filename
            overwrite:(BOOL)overwrite
-       sourceFileUrl:(NSURL*)sourceFileUrl
+      sourceFilePath:(NSString*)sourceFilePath
             progress:(void (^)(unsigned long long bytesUploaded, unsigned long long totalToBeUploaded))progress
              success:(void (^)(NSDictionary *metadata))success
              failure:(void (^)(NSError *error))failure;
